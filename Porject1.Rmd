@@ -1,0 +1,53 @@
+---
+title: "Project1"
+author: "Yahui Li"
+date: "2020/1/13"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+#Step1 Read Data
+
+```{r read data, echo = FALSE, message = FALSE}
+#install.packages("AER")
+library(AER)
+data("STAR")
+```
+
+We will only examine the math scores in 1st grade in this project.
+```{r}
+data <- data.frame(star1 = STAR$star1, math1 = STAR$math1)
+
+sapply(data,class)
+sapply(data,summary)
+```
+
+```{r}
+data.star1.na <- data[is.na(data$star1),]
+all(is.na(data.star1.na$math1))
+```
+
+Which shows that the math score has not been recorded if class type is not recorded.
+So we can remove the data where star1 is NA.
+
+One of the way to deal with NA in math1 is to remove them
+```{r}
+data_remove_na <- na.omit(data[-is.na(data$star1),])
+```
+```{r}
+pie(table(data_remove_na$star1),main = "pie chart of STAR class type")
+tapply(data_remove_na$math1, data_remove_na$star1,summary)
+boxplot(data$math1~data$star1,main = "box plot of math score in different class", 
+        xlab = "STAR class type", ylab = "math score", col = c("white", "skyblue", "pink"))
+```
+
+From the result
+For mean, small > regular+aide > regular
+From all quantile information, small > regular+aide > regular
+For min, small > other two; For max, they are the same
+
+something interesting: there are only some certain scores like 601 612 627 653 676.
+

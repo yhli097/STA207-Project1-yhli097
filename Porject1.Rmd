@@ -2,14 +2,16 @@
 title: "Project1"
 author: "Yahui Li"
 date: "2020/1/13"
-output: html_document
+output:
+  html_document: default
+  pdf_document: default
 ---
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-#Step1 Read Data
+###Step1 Read Data
 
 ```{r read data, echo = FALSE, message = FALSE}
 #install.packages("AER")
@@ -17,6 +19,7 @@ library(AER)
 data("STAR")
 ```
 
+###Step2 Explore Data
 We will only examine the math scores in 1st grade in this project.
 ```{r}
 data <- data.frame(star1 = STAR$star1, math1 = STAR$math1)
@@ -38,16 +41,43 @@ One of the way to deal with NA in math1 is to remove them
 data_remove_na <- na.omit(data[-is.na(data$star1),])
 ```
 ```{r}
+table(data_remove_na$star1)
 pie(table(data_remove_na$star1),main = "pie chart of STAR class type")
 tapply(data_remove_na$math1, data_remove_na$star1,summary)
 boxplot(data$math1~data$star1,main = "box plot of math score in different class", 
         xlab = "STAR class type", ylab = "math score", col = c("white", "skyblue", "pink"))
 ```
 
-From the result
-For mean, small > regular+aide > regular
-From all quantile information, small > regular+aide > regular
-For min, small > other two; For max, they are the same
+From the result，
 
-something interesting: there are only some certain scores like 601 612 627 653 676.
+for mean, small > regular+aide > regular;
 
+for all quantile information, small > regular+aide > regular;
+
+for min, small > other two; For max, they are the same.
+
+Something interesting: there are only some certain scores like 601 612 627 653 676.
+
+
+###Step3 One Way ANOVA Model
+
+$$Y_{ij} = \mu_{1} + \tau_{2}X_{2,ij} +\tau_{3}X_{3,ij}+\epsilon_{ij},\quad
+\epsilon_{ij}\sim\mathrm{N}(0,\sigma^{2}),\quad
+i=1,2,3,j=1,\cdots,n_{i}.$$
+
+where $i=1$ means the class type in 1st grade is regular; $i=2$ means the class type in 1 st grade is small; $i=3$ means the class type in 1st grade is regular-with-aide.
+
+From the table in step2, $n_{1} = 2507, n_{2} = 1868, n_{3} = 2225, n = 6600$.
+
+$\mu_{i}$ means the population mean of the i-th type class in 1st grade, $i = 1, 2, 3$.
+
+$\tau_{i} = \mu_{i} - \mu_{1}$ means the difference in population mean between i-th type and first type in 1st grade, $i = 2, 3$.
+
+$\epsilon_{ij}$ is the random variable about error which is Normal with $0$ mean  and $\sigma^{2}$ variance under assumption. 
+
+
+```{r}
+anova.fit<- aov(math1~star1,data=data_remove_na)
+summary(anova.fit)
+anova.fit$coefficients
+```

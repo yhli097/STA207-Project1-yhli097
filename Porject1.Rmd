@@ -11,15 +11,15 @@ output:
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-###Step1 Read Data
+### Step1 Read Data
 
-```{r read data, echo = FALSE, message = FALSE}
+```{r read data,  message = FALSE}
 #install.packages("AER")
 library(AER)
 data("STAR")
 ```
 
-###Step2 Explore Data
+### Step2 Explore Data
 We will only examine the math scores in 1st grade in this project.
 ```{r}
 data <- data.frame(star1 = STAR$star1, math1 = STAR$math1)
@@ -48,7 +48,7 @@ boxplot(data$math1~data$star1,main = "box plot of math score in different class"
         xlab = "STAR class type", ylab = "math score", col = c("white", "skyblue", "pink"))
 ```
 
-From the result，
+From the result,
 
 for mean, small > regular+aide > regular;
 
@@ -59,7 +59,7 @@ for min, small > other two; For max, they are the same.
 Something interesting: there are only some certain scores like 601 612 627 653 676.
 
 
-###Step3 One Way ANOVA Model
+### Step3 One Way ANOVA Model
 
 $$Y_{ij} = \mu_{1} + \tau_{2}X_{2,ij} +\tau_{3}X_{3,ij}+\epsilon_{ij},\quad
 \epsilon_{ij}\sim\mathrm{N}(0,\sigma^{2}),\quad
@@ -69,15 +69,54 @@ where $i=1$ means the class type in 1st grade is regular; $i=2$ means the class 
 
 From the table in step2, $n_{1} = 2507, n_{2} = 1868, n_{3} = 2225, n = 6600$.
 
+$X_{2,ij} = 1$ if $i=2$, otherwise $X_{2,ij} = 0$.
+$X_{3,ij} = 1$ if $i=3$, otherwise $X_{3,ij} = 0$.
+
 $\mu_{i}$ means the population mean of the i-th type class in 1st grade, $i = 1, 2, 3$.
 
 $\tau_{i} = \mu_{i} - \mu_{1}$ means the difference in population mean between i-th type and first type in 1st grade, $i = 2, 3$.
 
 $\epsilon_{ij}$ is the random variable about error which is Normal with $0$ mean  and $\sigma^{2}$ variance under assumption. 
 
+### Step4 Appropriate
 
 ```{r}
-anova.fit<- aov(math1~star1,data=data_remove_na)
+hist(data_remove_na$math1, main = "histogram of math socre in 1st grade")
+qqnorm(data_remove_na$math1)
+qqline(data_remove_na$math1)
+```
+
+The graph shows the the distribution of math score is right-skewed.
+
+So we use box cox method to make a transformation on math1. 
+
+```{r}
+library(MASS)
+boxcox(math1 ~ star1 , data = data_remove_na)
+```
+```{r}
+hist(log(data_remove_na$math1), main = "histogram of math socre in 1st grade")
+qqnorm(log(data_remove_na$math1))
+qqline(log(data_remove_na$math1))
+```
+
+The graph shows the distribution of log math score in 1st grade is Normal-like.
+
+### Step5 Fit Model
+
+```{r}
+anova.fit<- aov(log(math1)~star1,data=data_remove_na)
 summary(anova.fit)
 anova.fit$coefficients
 ```
+
+From the result, the fitted model we get is:
+$$\log\hat{Y}_{ij} = 6.2608 + 0.0250 X_{2,ij} + 0.0081X_{3,ij}$$
+
+with means when the type is regular, the estimate math score is $e^{6.2608} = 523.6377$;
+when the type is small, the estimate math score is $e^{6.2608+0.0250} = 536.8936$;
+when the type is regular-with-aide, the estimate math score is $e^{6.2608+0.0081} = 527.8964$.
+
+
+
+

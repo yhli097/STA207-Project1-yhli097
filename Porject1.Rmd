@@ -78,15 +78,49 @@ $\tau_{i} = \mu_{i} - \mu_{1}$ means the difference in population mean between i
 
 $\epsilon_{ij}$ is the random variable about error which is Normal with $0$ mean  and $\sigma^{2}$ variance under assumption. 
 
+**bingdao want to add**
+$Y_{ij}$ denotes the math grade in 1st grade of the $j$-th experimental unit
+in the $i$-th class type.
+
+$\epsilon_{ij}$ is the random variable and assumed to be i.i.d. Normal(0,$\sigma^{2}$).  
+
+Model Assumption  
+(a) Response variable residuals are normally distributed.  
+(b) Variances of populations are equal.  
+(c) Responses for a given group are independent and identically distributed normal random variables.  
+All of the assumptions are necessary, because for each population violate the normal distribution, F-tests are not robust. Moreover, if the assumption of homoscedasticity is violated, the Type I error properties degenerate much more severely.[5] ( Randolf, E. A.; Barcikowski, R. S. (1989). "Type I error rate when real study values are used as population parameters in a Monte Carlo study". Paper presented at the 11th annual meeting of the Mid-Western Educational Research Association, Chicago.)  
+
+
+
+
+
+
+
 ### Step4 Appropriate
+Before we fit the model, we need to ensure that model is appropriate on this dataset, that is, the response variable satisfies the assumptions of our model. In other words, we will check the normality and equal variance of the response varibales.
+
+We first make a density plot and a Q-Q plot to check the normality of "math1"
 
 ```{r}
-hist(data_remove_na$math1, main = "histogram of math socre in 1st grade")
-qqnorm(data_remove_na$math1)
-qqline(data_remove_na$math1)
+#hist(data_remove_na$math1, main = "histogram of math socre in 1st grade")
+#qqnorm(data_remove_na$math1)
+#qqline(data_remove_na$math1)
 ```
 
-The graph shows the the distribution of math score is right-skewed.
+**bingdao version**
+```{r}
+library(ggplot2)
+x <- seq(404, 676, length.out=100)
+df <- with(data_remove_na, data.frame(x = x, y = dnorm(x, mean(math1), sd(math1))))
+
+ggplot(data_remove_na, aes(x=math1, y = ..density..)) + 
+  geom_histogram(binwidth = 20, fill = "grey", color = "black") +
+  geom_line(data = df, aes(x = x, y = y), color = "red")
+
+qqnorm(data_remove_na$math1, pch = 1, frame = FALSE)
+qqline(data_remove_na$math1, col = "steelblue", lwd = 2)
+```
+The histogram shows that it seems normal distributed. The Q-Q plot shows the the distribution of math score is right-skewed.
 
 So we use box cox method to make a transformation on math1. 
 
@@ -94,13 +128,40 @@ So we use box cox method to make a transformation on math1.
 library(MASS)
 boxcox(math1 ~ star1 , data = data_remove_na)
 ```
+
+It indicates that we need make a log-transformation for "math1" 
+
 ```{r}
-hist(log(data_remove_na$math1), main = "histogram of math socre in 1st grade")
-qqnorm(log(data_remove_na$math1))
-qqline(log(data_remove_na$math1))
+#hist(log(data_remove_na$math1), main = "histogram of math socre in 1st grade")
+#qqnorm(log(data_remove_na$math1))
+#qqline(log(data_remove_na$math1))
+```
+
+**bingdao version**
+```{r}
+summary(log(data_remove_na$math1))
+x <- seq(6.001, 6.516, length.out=50)
+df <- with(data_remove_na, data.frame(x = x, y = dnorm(x, mean(log(math1)), sd(log(math1)))))
+
+ggplot(data_remove_na, aes(x=log(math1), y = ..density..)) + 
+  geom_histogram(binwidth = 0.02, fill = "grey", color = "black") +
+  geom_line(data = df, aes(x = x, y = y), color = "red")
+
+qqnorm(log(data_remove_na$math1), pch = 1, frame = FALSE)
+qqline(log(data_remove_na$math1), col = "steelblue", lwd = 2)
 ```
 
 The graph shows the distribution of log math score in 1st grade is Normal-like.
+
+**bingdao version**
+Then we calculate the variance of math grade in 1st grade of each class type.
+```{r}
+library(tidyverse)
+data_remove_na %>%
+  group_by(star1) %>%
+  summarize(var_math1 = var(log(math1), na.rm = T))
+```
+The result shows that they are very small and nearly equal to each other. Therefore, it is appropiate to run our model on this dataset.
 
 ### Step5 Fit Model
 

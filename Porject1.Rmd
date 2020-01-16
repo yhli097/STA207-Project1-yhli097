@@ -60,7 +60,7 @@ Something interesting: there are only some certain scores like 601 612 627 653 6
 
 
 
-***Bingdao Version*
+**Bingdao Version**
 
 In order to explore this dataset, we first need to select the variables related to our goal. Because we only examine the math scores in 1st grade in this project, we exclude some variables with information higher than first grade, and we keep some variables to do with kindergarten for the reason that the education in kindergarten inevitably affects performance of children in the first grade. To note that, we don't include all the variables to do with kindergarten. For some factors, for examples: whether the student qualified for free lunch in kindergarten; school type in kindergarten, highest degree of kindergarten teacher, teacher's career ladder level in kindergarten, etc, these things can hardly affect the performance of children in 1st grade. Compared with these factors in 1st grade, the influcen of these factors in kindergarten on first-grade chilidren can be negligible. Aiming to make a good summary to show an overview of this dataset, we narrow the 47 variables to these variables: "gender", "ethnicity", "birth", "stark", "star1", "star2", "star3", "readk", "read1", "read2", "read3", "mathk", "math1", "math2", "math3", "lunch1", "school1", "degree1", "ladder1", ("experience1"), "tethnicity1".
 

@@ -414,6 +414,26 @@ scheffe.test(anova.fit,"star1", group=TRUE,console=TRUE)
 ```
 For task 7, we choose three methods to test the difference in the math scaled score in 1st grade across students in different class types. We use Tukey's Procedure, Bonfeeoni's Procedure and Scheffe's procedure. For Tukey's Procedure, all the p values are less than 0.05, there is statistically significant among three factors. For Bonfeeoni's Procedure, we get the same result as Tukey's Procedure. However, for Scheffe's procedure, we get the different result. It shows that Means with the same letter are not significantly different.
 
+**another organization**
+In this part, in order to investigate whether there is a difference among the different factor level means, we use F-test. Moreover, to investigate comparisons between two factor level means simultaneously and control the family-wise type-I error, we use Tukey’s Procedure, Bonferroni’s Procedure.
+
+F-test  
+To test null hypotheis $H_0:\mu_1=\mu_2=\mu_3$ against alternative hypothesis: not all $\mu_{i}$'s are equal. We caculate F-statistic: $F^*=\frac{MSTR}{MSE}=52.16923$ and $F(0.95,2,6597)=2.997093$. Because $F^*>F(0.95,2,6597)$, We can thus reject the null hypothesis at the significance level 0.05. We can claim that there exists difference among factor level means.
+
+Tukey’s Procedure  
+```{r}
+TukeyHSD(anova.fit)
+```
+There are three pairwise comparisons of factor levels means. And from the result, we can see that all of them should be declared as being different.  
+
+Bonferroni’s Procedure
+```{r}
+pairwise.t.test(log(data_remove_na$math1),data_remove_na$star1,p.adj = "bonf")
+```
+According to the result, all of p-value of three pairwise comparison is lesser than 0.05. We can make a conclusion that all of factor level means comparisions  are different. 
+
+
+
 
 
 

@@ -461,6 +461,51 @@ qqline(data_log$logmath1, col = &quot;steelblue&quot;, lwd = 2)</code></pre>
 ## 2 small          0.00666
 ## 3 regular+aide   0.00650</code></pre>
 <p>The result shows that they are nearly equal. Therefore, it is appropiate to run our model on this dataset.</p>
+<div id="step5-fit-model" class="section level3">
+<h3>Step5 Fit Model</h3>
+<pre class="r"><code>anova.fit&lt;- aov(log(math1)~star1,data=data_remove_na)
+summary(anova.fit)</code></pre>
+<pre><code>##               Df Sum Sq Mean Sq F value Pr(&gt;F)    
+## star1          2   0.68  0.3391   52.56 &lt;2e-16 ***
+## Residuals   6597  42.55  0.0065                   
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</code></pre>
+<pre class="r"><code>anova.fit$coefficients</code></pre>
+<pre><code>##       (Intercept)        star1small star1regular+aide 
+##        6.26079457        0.02499081        0.00812069</code></pre>
+<p>From the result, the fitted model we get is: <span class="math display">\[\log\hat{Y}_{ij} = 6.2608 + 0.0250 X_{2,ij} + 0.0081X_{3,ij}\]</span></p>
+<p>with means when the type is regular, the estimate math score is <span class="math inline">\(e^{6.2608} = 523.6377\)</span>; when the type is small, the estimate math score is <span class="math inline">\(e^{6.2608+0.0250} = 536.8936\)</span>; when the type is regular-with-aide, the estimate math score is <span class="math inline">\(e^{6.2608+0.0081} = 527.8964\)</span>.</p>
+<table>
+<thead>
+<tr class="header">
+<th>Source of Variation</th>
+<th align="center">Sum of Squares</th>
+<th align="center">Degrees of Freedom</th>
+<th align="center">MS</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>Between treatments</code></td>
+<td align="center">SSTR = 0.68</td>
+<td align="center">2</td>
+<td align="center">0.3391</td>
+</tr>
+<tr class="even">
+<td><code>Within treatments</code></td>
+<td align="center">SSE = 42.55</td>
+<td align="center">6597</td>
+<td align="center">0.0065</td>
+</tr>
+<tr class="odd">
+<td><code>Total</code></td>
+<td align="center">SSTO = 43.23</td>
+<td align="center">6599</td>
+<td align="center">0.0066</td>
+</tr>
+</tbody>
+</table>
+</div>
 
 
 

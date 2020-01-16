@@ -110,3 +110,36 @@ data_log %>%
   summarize(var_math1 = var(logmath1, na.rm = T))
 ```
 The result shows that they are nearly equal. Therefore, it is appropiate to run our model on this dataset.
+
+
+
+### Step5 Fit Model
+
+```{r}
+anova.fit<- aov(log(math1)~star1,data=data_remove_na)
+summary(anova.fit)
+anova.fit$coefficients
+```
+
+From the result, the fitted model we get is:
+$$\log\hat{Y}_{ij} = 6.2608 + 0.0250 X_{2,ij} + 0.0081X_{3,ij}$$
+
+with means when the type is regular, the estimate math score is $e^{6.2608} = 523.6377$;
+when the type is small, the estimate math score is $e^{6.2608+0.0250} = 536.8936$;
+when the type is regular-with-aide, the estimate math score is $e^{6.2608+0.0081} = 527.8964$.
+
+
+
+
+
+|     Source of Variation   |  Sum of Squares   |  Degrees of Freedom | MS |
+| --------------|:-----------:|:----------------:|:------------------------------------------:|
+| `Between treatments`     | SSTR = 0.68 | 2  |  0.3391  | |
+| `Within treatments`      | SSE = 42.55 | 6597 |   0.0065  | |
+|    `Total`      |   SSTO = 43.23  |  6599   |   0.0066    |     |
+
+
+```{r}
+
+
+```

@@ -197,6 +197,58 @@ plot(anova.fit, which = c(1,2))
 ```
 The first figure indicates equal variacne, and the second nearly linear figure supports normality. 
 
+**shijianversion**
+
+```{r}
+par(mfrow=c(2,2))
+residuals <- anova.fit$residuals
+##Plot the residuals (or the other two versions) against fitted values 
+plot(anova.fit$fitted.values, anova.fit$residuals,
+     type = "p",pch=16,cex=1.5,xlab="Fitted values",ylab="Residuals")
+#QQplot
+qqnorm(residuals);qqline(residuals)
+#residuals
+hist(residuals)
+#studentized residuals
+residuals_std <- rstudent(anova.fit)
+hist(residuals_std)
+```
+
+From the scatterplot of residuals vs fitted valuues, the residuals are divided into three groups and among each group, these residuals are around the zero, whcih menas that the average residuals equals to zero.
+According to the histogram of residuals and studentized residuals, we can find that the distribution of the residuals of the fitted model approximates to the normal distribution. Besides, the same conclusion can be obtained by checking the Q-Q Plot of the residuals. Therefore, we can confirm that the residuals of the model are normally distributed.
+
+We now turn to formal tests of the equality of variances.
+First, we calculate the varianves for each type of class and find that the variances of three types of class are close to each other.
+```{r}
+# Calculate the variances for each group:
+(vars = tapply(data_remove_na$math1,data_remove_na$star1,var))
+
+```
+Then, because the sample sizes of the three types of class are not same, we choose two formal tests, which are Bartlett test and Levene test, to check the equality of model variances.
+```{r}
+data_remove_na$residuals <- residuals
+#bartlett test
+bartlett.test(residuals ~ star1, data = data_remove_na)
+#levene test
+leveneTest(residuals ~ star1, data = data_remove_na)
+```
+From the two tests, both of the P-values are much larger than 0.05, which means that we can not reject the null hyperthesis: the variances of the model are equal.
+
+In conclusion, we confirm that our model satisifies the normality assumption.
+
+#### Sensitivity Analysis
+In order to test the sensitivity of our model, we decide to relax the assumption of our model. To be specific, we want to figure out that whether the influence of class size still exists even if the data is not normally distributed. Thus, we conduct the nonparameteric tests as follows, which are The rank test and Krusal-Wallis test.
+```{r}
+#rank test
+data_remove_na$rank <- rank(data_remove_na$math1)
+summary(aov(rank ~ star1, data = data_remove_na))
+
+#kruskal test
+kruskal.test(math1 ~ star1, data = data_remove_na)
+
+```
+The results both show that the math scores of the different types of class are different at 99% confident level. So, even if the data was not normally distributed, there would still be influence of class size. In a word, our one-way anova model is reasonable in this case.
+
 
 #step6 hypothese test
 

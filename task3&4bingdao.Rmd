@@ -128,18 +128,21 @@ with means when the type is regular, the estimate math score is $e^{6.2608} = 52
 when the type is small, the estimate math score is $e^{6.2608+0.0250} = 536.8936$;
 when the type is regular-with-aide, the estimate math score is $e^{6.2608+0.0081} = 527.8964$.
 
-
-
-
+The following is a ANOVA table for this model.  
 
 |     Source of Variation   |  Sum of Squares   |  Degrees of Freedom | MS |
 | --------------|:-----------:|:----------------:|:------------------------------------------:|
-| `Between treatments`     | SSTR = 0.68 | 2  |  0.3391  | |
-| `Within treatments`      | SSE = 42.55 | 6597 |   0.0065  | |
-|    `Total`      |   SSTO = 43.23  |  6599   |   0.0066    |     |
+| `Between treatments`     | SSTR = 0.68 | 2  |  MSTR = 0.3391  | |
+| `Within treatments`      | SSE = 42.55 | 6597 |   MSE = 0.0065  | |
+|    `Total`      |   SSTO = 43.23  |  6599   |       |     |
 
+###step6 model diagnostic and sensitivity analysis
 
+Recalling the above assumptions, there are three things we need to check: normality, equal variance and independence.
+
+By Q-Q plot, we can check normality. And By residuals vs fitted value plot, we can check equal variance.
 ```{r}
-
-
+par(mfrow=c(1,2))
+plot(anova.fit, which = c(1,2))
 ```
+The first figure indicates equal variacne, and the second nearly linear figure supports normality. 

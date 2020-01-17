@@ -1,0 +1,177 @@
+---
+title: "Project 1: Project STAR I"
+date: "01/17/2020"
+output:
+  html_document:
+    number_sections: yes
+---
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Group Partners:
+
+1. Bingdao Chen bdchen@ucdavis.edu contribution: 
+
+2. Yahui Li yhuli@ucdavis.edu contribution: 
+
+3. Zihan Wang zihwang@ucdavis.edu contribution: 
+
+4. Jian Shi jnshi@ucdavis.edu contribution: 
+
+# Introduction
+
+This Document is the first project of Group 7 in STA 207, Winter Quarter 2020.
+
+## Background
+
+Tennesses Student/Teacher Achievement Ratio study (Project STAR) was conducted in the late 1980s to evaluate the effect of class size on test scores. The study randomly assigned students to small classes, regular classes, and regular classes with a teacher’s aide. In order to randomize properly, schools were enrolled only if they had enough studybody to have at least one class of each type. Once the schools were enrolled, students were randomly assigned to the three types of classes, and one teacher was randomly assigned to one class.
+
+## Data Description
+
+The `STAR` dataset from the `AER` package which are from the very influential randomized experient STAR, assessing the effect of reducing class size on test scores in the early grades. The dataset contains scaled scores for math and reading from kindergarten to 3rd grade. We will only examine the math scores in 1st grade in this project[1].
+
+
+The following is the description of `STAR` from [2].
+
+STAR is a data frame containing 11,598 observations on 47 variables.
+
+Here are main variables for 1st grade.
+
+
+|     Variable      |                                 Description                |
+| ---------|:--------------------------------------------------------------------------:|
+| `gender`     | factor indicating student's gender. |
+| `ethnicity`      | factor indicating student's ethnicity with levels `cauc` (Caucasian), `afam` (African-American), `asian` (Asian), `hispanic` (Hispanic), `amindian` (American-Indian) or `other`. |
+| `birth` | student's birth quarter (of class yearqtr). |
+| `star1` | factor indicating the STAR class type in 1st grade: `regular`, `small`, or `regular-with-aide`. `NA` indicates that no STAR class was attended. |
+| `read1` | total reading scaled score in 1st grade. |
+| `math1` | total math scaled score in 1st grade. |
+| `lunch1` | factor indicating whether the student qualified for free lunch in 1st grade.|
+| `school1` | factor indicating school type in 1st grade: `inner-city`, `suburban`, `rural` or `urban`. |
+| `degree1` | factor indicating highest degree of 1st grade teacher: `bachelor`, `master`, `specialist`, or `phd`. |
+| `ladder1` | factor indicating teacher's career ladder level in 1st grade: `level1`, `level2`, `level3`, `apprentice`, `probation` or `noladder`. |
+| `experience1` | years of teacher's total teaching experience in 1st grade. |
+| `tethnicity1` | factor indicating teacher's ethnicity in 1st grade with levels `cauc` (Caucasian) or `afam` (African-American). |
+| `system1` | factor indicating school system ID in 1st grade. |
+| `schoolid1` | factor indicating school ID in 1st grade. |
+
+### Question of Interest
+
+Our questions have three parts:
+
+a. How to build a one-way ANOVA model to study the effects of class types on the math scaled scores in 1st grade? Is this model appropriate? How does the model fit the data?
+
+b. Is there any difference in the math scaled score in 1st grade across students in different class types?
+
+c. Can we make any causal statements based on the analysis?
+
+
+# Methods and Results
+
+## Explore Data
+
+We choose two columns `star1` and `math1` in `STAR` as our dataset.
+
+### Deal with NA
+
+The data has several `NA` in both `star1` and `math1`. The `NA` in `star1` means that no STAR class was attended. We checked when `star1` is `NA`, `math1` is also `NA`, which is not informative. Therefore, we removed the cases where `star1` is `NA`.
+
+After that, there are only 229 `NA` in 6829 math scores in `math1`, which have little influence. So we decided to remove them too.
+
+### Summary Statistics
+
+From the pie chart on `star1`, there are almost the same number of cases in different type of classes.
+
+From the box plot on `math1` divided by `star1`, we can see roughly that the quantile of math scores in small class is higher than in regular-with-aide class, which is higher than in regular class. So does the average math score from the summary table.
+
+
+## One-Way ANOVA
+
+In this part our goal is to build a one-way ANOVA model on `math1` by `star1`.
+The model equation and notation as below:
+
+$$Y_{ij} = \mu_{1} + \tau_{2}X_{2,ij} +\tau_{3}X_{3,ij}+\epsilon_{ij},\quad
+\epsilon_{ij}\sim\mathrm{N}(0,\sigma^{2}),\quad
+i=1,2,3,j=1,\cdots,n_{i}.$$
+
+where $i=1$ means the class type in 1st grade is regular; $i=2$ means the class type in 1st grade is small; $i=3$ means the class type in 1st grade is regular-with-aide.
+
+$n_{1} = 2507, n_{2} = 1868, n_{3} = 2225, n = 6600$.
+
+$X_{2,ij} = 1$ if $i=2$, otherwise $X_{2,ij} = 0$.
+$X_{3,ij} = 1$ if $i=3$, otherwise $X_{3,ij} = 0$.
+
+$Y_{ij}$ denotes the math score in 1st grade of the j-th experimental unit
+in the i-th class type, $i = 1,2, 3, j = 1,\cdots,n_{i}$.
+
+$\mu_{i}$ means the population mean of math score in i-th type class in 1st grade, $i = 1, 2, 3$.
+
+$\tau_{i} = \mu_{i} - \mu_{1}$ means the difference in population mean of math score between i-th type and first type in 1st grade, $i = 2, 3$.
+
+$\epsilon_{ij}$ is independent and identically distributed normal random variable with $0$ mean and $\sigma^{2}$ variance. 
+
+Model Assumption:
+
+(a) Response variable residuals are normally distributed.  
+
+(b) Variances of populations are equal.  
+
+(c) Responses for a given group are independent and identically distributed normal random variables.  
+
+All of the assumptions are necessary, because F-test and related procedures are pretty robust to the normality and equal variance assumptions, and pairwise comparisons could be substantially affected by unequal variances. Moreover, non-independence can have serious side effects and is hard to correct. So it is important to apply randomization whenever necessary. 
+
+### Box-Cox Transformation
+
+Before we fit the model, we need to ensure that model is appropriate on this dataset, that is, the response variable satisfies the assumptions of our model. In other words, we will check the normality and equal variance of the response varibales.
+
+We first draw the density plot and Q-Q plot to check the normality of `math1` ,and we find the distribution of `math1` is right-skewed. So we use Box-Cox method on `math1` and from the result, we need to make a log-transformation on `math1`. 
+
+After the logarithmic transformation, the distribution shows more normal-like. Then we calculate the variance of log math grade in 1st grade of each class type. The result shows that they are very small and nearly equal to each other. Therefore, it is appropiate to build our model on this dataset after log-transformation on `math1`.
+
+### Fitted Model
+
+From the result in R, the fitted model we get is:
+$$\log\hat{Y}_{ij} = 6.2608 + 0.0250 X_{2,ij} + 0.0081X_{3,ij}$$
+
+with means when the type is regular, the estimate math score is $e^{6.2608} = 523.6377$;
+when the type is small, the estimate math score is $e^{6.2608+0.0250} = 536.8936$;
+when the type is regular-with-aide, the estimate math score is $e^{6.2608+0.0081} = 527.8964$.
+
+The following is a ANOVA table for this model.  
+
+|     Source of Variation   |  Sum of Squares   |  Degrees of Freedom | Mean of Squares | F*|
+| --------------|:-----------:|:----------------:|:------------------------------------------:| :-----:|
+| `Between treatments`     | SSTR = 0.68 | 2  |  MSTR = 0.3391  |  F* = 52.56 |
+| `Within treatments`      | SSE = 42.55 | 6597 |   MSE = 0.0065  | | |
+|    `Total`      |   SSTO = 43.23  |  6599   |       |     | |
+
+The null hypothesis is $\tau_{2} = \tau_{3} = 0$, and the alternative hypothesis is $\tau_{2}$ and $\tau_{3}$ are not all $0$. Under $\alpha = 0.01$, the critical value $F(\alpha;2,6597)=4.61$, which is less than F ratio $52.56$. Therefore, we reject null hypothesis, and there is a significant association between `star1` and `math1`.
+
+### Model Diagnose
+
+
+
+
+
+
+
+
+# Conclusions and Discussion
+
+
+
+
+# References
+
+[1] https://chenshizhe.github.io/STA207W2020/ch-proj.html#project-1-project-star-i
+
+[2] https://cran.r-project.org/web/packages/AER/AER.pdf
+
+
+
+# Code and Output
+
+

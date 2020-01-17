@@ -146,3 +146,22 @@ par(mfrow=c(1,2))
 plot(anova.fit, which = c(1,2))
 ```
 The first figure indicates equal variacne, and the second nearly linear figure supports normality. 
+
+
+
+
+###step 8
+```{r}
+
+standarmath <- scale(data_remove_na$math1)
+data_std <- data.frame(data_remove_na$star1, standarmath)
+library(tidyverse)
+data_std %>%
+  group_by(data_std$data_remove_na.star1) %>%
+  summarize(mean_math = mean(standarmath))
+
+data_std %>%
+  group_by(data_std$data_remove_na.star1) %>%
+  summarize(count = n())
+
+```

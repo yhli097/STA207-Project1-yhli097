@@ -430,7 +430,7 @@ Bonferroni’s Procedure
 ```{r}
 pairwise.t.test(log(data_remove_na$math1),data_remove_na$star1,p.adj = "bonf")
 ```
-According to the result, all of p-value of three pairwise comparison is lesser than 0.05. We can make a conclusion that all of factor level means comparisions  are different. 
+According to the result, all of p-value of three pairwise comparison is lesser than 0.05. We can make a conclusion that all of factor level means comparisions  are different.
 
 
 

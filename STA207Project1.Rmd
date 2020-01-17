@@ -156,6 +156,52 @@ The null hypothesis is $\tau_{2} = \tau_{3} = 0$, and the alternative hypothesis
 
 
 
+###Difference among factors
+
+In order to investigate whether there is a difference among three factor level means, We choose to use F-test. Moreover, to investigate comparisons between every two factor level means simultaneously and control the family wise error rate, we use Tukey’s Procedure and Bonferroni’s Procedure.
+
+####F-test  
+
+To test null hypotheis $H_0:\mu_1=\mu_2=\mu_3$ against alternative hypothesis: not all $\mu_{i}$'s are equal. We caculate F-statistic: $F^*=\frac{MSTR}{MSE}=52.16923$ and $F(0.95,2,6597)=2.997093$. Because $F^*>F(0.95,2,6597)$, We can reject the null hypothesis at the significance level 0.05. We can claim that there exists difference among factor level means.
+
+####Tukey’s Procedure 
+
+For Tukey's Procedure, the largest difference is between small and regular, it is e^0.025 = 1.02. All the p values are less than 0.05, every two factors are statistically significant. 
+
+####Bonferroni’s Procedure
+
+For Bonfeeoni's Procedure, all of p values of three pairwise comparison is less than 0.05. We can make a conclusion that every two factors are statistically significant. We get the same result as Tukey's Procedure. 
+
+###Causal statements
+
+We will investigate whether there are any causal statements of math grade in three different class types. Instead of discussing all of them simultaneously, our strategy is to make pairwise tests among them. Therefore, we will take three tests including small class with regular class, small class with regular-with-aid class and regular class with regular-with-aid class.
+
+In our causal inference, potential outcome is the "math1", which represents the math grade in 1st grade. And there are three assumptions, it should satisfy:  
+1.Causal order can't be reversed.  
+2.No spillover effect.  
+3.same version of treatment.  
+4.potential outcomes follow a normal distribution.  
+All of them are satisfied, then, causal inference can start.
+
+For a causal effect test:  
+Null hypothese $H_0: Y_{i}(1) = Y_{i}(0)$ for all $i=1,2,3,\cdots,N$.  
+Alternative hypothese $H_{a}:$ not for all $i$, $Y_{i}(1) = Y_{i}(0)$,  
+where $Y_{i}(1)$ represents the $i$-th potential outcome when $Z_{i}=1$; $Y_{i}(0)$ represents the $i$-th potential outcome when $Z_{i}=0$. $Z_{i}=1$ and $Z_{i}=0$ stand for different treatments and $N$ represents the total number of potential outcomes.
+
+Our estimand is $\tau \equiv  \overline{Y(1)}-\overline{Y(0)}$. The unbiased estimator of this estimand is $\hat{\tau} = \frac{\sum_{i}^{N}1\{Z_{i}=1\}Y_{i}(1)}{N_{1}}-\frac{\sum_{i}^{N}1\{Z_{i}=0\}Y_{i}(0)}{N_{0}}$, where $N_{1}$ represnets the number of observed outcomes when $Z_{i}=1$ and $N_{0}$ represnets the number of observed outcomes when $Z_{i}=0$. It also has $N_{1}+N_{0}=N$.  
+The true variance of $\hat{\tau}$ is $\frac{S_{1}^{2}}{N_{1}}+\frac{S_{0}^{2}}{N_{0}}-\frac{S_{10}^{2}}{N_{}}$, where $S_{1}^{2}=\frac{1}{N-1}\sum_{i=1}^N(Y_i(1)-\bar Y(1))^2$, $S_{0}^{2}=\frac{1}{N-1}\sum_{i=1}^N(Y_i(0)-\bar Y(0))^2$, $S_{10}^{2}=\frac{1}{N-1}\sum_{i=1}^N((Y_i(0)-Y_i(0))-(\bar Y(1)-\bar Y(0)))^2$. It is worthy to note that, $S_{10}^{2}$ equals to zero if the treatment effect is
+constant for all $i$. Therefore, our estimator of variance is $\widehat{var}(\hat\tau)= \frac{S_{1}^{2}}{N_{1}}+\frac{S_{0}^{2}}{N_{0}}$.  
+Then we get a statistic $t^*=\frac{\hat{\tau}}{\widehat{var}(\hat\tau)}$. And it approximately follows the t-distribution. For the degree of freedom, we take the	Welch's approximate t solution to estimate it [1] (https://en.m.wikipedia.org/wiki/Behrens%E2%80%93Fisher_problem). The degree of freedom $\upsilon$ can be regarded as $\frac{(\gamma_1+\gamma_2)^2}{\gamma_1^2/(n_1-1)+\gamma_2^2/(n_2-1)}$, where $\gamma_i=\frac{\sigma_2^2}{n_i}$. For the significance level $\alpha$, because we do pairwise tests, let $\alpha=1-0.05/3$ as the significance level to control the family wise error rate. Compared with two values, we can make a conclusion whether there is a casual effect.
+Test 1  
+Treatments: small class type, regular class type.  
+$t^*=\frac{\hat{\tau}}{\widehat{var}(\hat\tau)}=8.077159$, degree of freedom $\upsilon\approx3892$. And $t^*>t(1-0.05/3,3892)$. We reject the null hypothese and make a claim that there is a casual effect, that is, compared with regular class, small class contributes to higher math grade in 1st grade.
+Test 2  
+Treatments: small class type, regular-with-aide class type.  
+$t^*=\frac{\hat{\tau}}{\widehat{var}(\hat\tau)}=4.820985$, degree of freedom $\upsilon\approx 3928$. And $t^*>t(1-0.05/3,3928)$. We reject the null hypothese and make a claim that there is a casual effect, that is, compared with regular-with-aide class, small class contributes to higher math grade in 1st grade.  
+Test 3  
+Treatments: regular class type, regular-with-aide class type.  
+$t^*=\frac{\hat{\tau}}{\widehat{var}(\hat\tau)}=3.294502$, degree of freedom $\upsilon\approx 4628$. And $t^*>t(1-0.05/3,4628)$. We reject the null hypothese and make a claim that there is a casual effect, that is, compared with regular-with-aide class, regular class contributes to higher math grade in 1st grade.  
+We can make a conclusion that there are causal effects among pairwise comparisons.
 
 
 

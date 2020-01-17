@@ -414,3 +414,56 @@ ggplot(na.omit(STAR), aes(x=tethnicity1, y=math1)) +
 ```
 
 As we can see, gender and ladder type don't have much effect on math grade. However, for ethnicity, hispanic's teacher have the best teaching effect, and African-American teacher have the worst teaching effect. For lunch, children having non-free lunch have higher math grade. For school,children from urban scholl have the best grade and children form inner-city school have the lowest grade. For teachers' degree, specialist have the best teaching effect, and phd have the worst teaching effect. For teacher's ethnicity, Caucasian teacher have the better teaching effect than African-American teacher.
+
+### step8 make any causal statements based on your analysis
+
+In this part, we will investigate whether there are any causal statements of math grade in three different class types. Instead of discuss all of them simultaneously, our strategy is to make pairwise tests among them. Therefore, we will take three tests including small class with regular class, small class with regular-with-aid class, and regular class with regular-with-aid class.
+
+In our causal inference, potential outcome is the "math1", which represents the math grade in 1st grade. And there are three assumption it should satisfy:  
+1.Causal order can't be reversed.  
+2.No spillover effect.  
+3.same version of treatment. 
+4.potential outcomes follow a normal distribution.
+all of them are satisfied, and causal inference can start.
+
+For a causal effect test:  
+Null hypothese $H_0: Y_{i}(1) = Y_{i}(0)$ for all $i=1,2,3,\cdots,N$.  
+Alternative hypothese $H_{a}:$ not for all $i$, $Y_{i}(1) = Y_{i}(0)$,  
+where $Y_{i}(1)$ represents the $i$-th potential outcome when $Z_{i}=1$, $Y_{i}(0)$ represents the $i$-th potential outcome when $Z_{i}=0$, $Z_{i}=1$, $Z_{i}=0$ stand for different treatments and $N$ represents the total number of potential outcomes.
+
+Our estimand is $\tau \equiv  \overline{Y(1)}-\overline{Y(0)}$. The unbiased estimator of this estimand is $\hat{\tau} = \frac{\sum_{i}^{N}1\{Z_{i}=1\}Y_{i}(1)}{N_{1}}-\frac{\sum_{i}^{N}1\{Z_{i}=0\}Y_{i}(0)}{N_{0}}$, where $N_{1}$ represnets the number of observed outcomes when $Z_{i}=1$ and $N_{0}$ represnets the number of observed outcomes when $Z_{i}=0$. It also has $N_{1}+N_{0}=N$.  
+The true variance of $\hat{\tau}$ is $\frac{S_{1}^{2}}{N_{1}}+\frac{S_{0}^{2}}{N_{0}}-\frac{S_{10}^{2}}{N_{}}$, where $S_{1}^{2}=\frac{1}{N-1}\sum_{i=1}^N(Y_i(1)-\bar Y(1))^2$, $S_{0}^{2}=\frac{1}{N-1}\sum_{i=1}^N(Y_i(0)-\bar Y(0))^2$, $S_{10}^{2}=\frac{1}{N-1}\sum_{i=1}^N((Y_i(0)-Y_i(0))-(\bar Y(1)-\bar Y(0)))^2$. It worth to note that, $S_{10}^{2}$ equals to zero if the treatment effect is
+constant for all $i$. Therefore, our estimator of variance is $\widehat{var}(\hat\tau)= \frac{S_{1}^{2}}{N_{1}}+\frac{S_{0}^{2}}{N_{0}}$.  
+Then we get a statistic $t^*=\frac{\hat{\tau}}{\widehat{var}(\hat\tau)}$. And it approximately follows the t-distribution. For the degree of freedom, we take the	Welch's approximate t solution to estimate it [1] (https://en.m.wikipedia.org/wiki/Behrens%E2%80%93Fisher_problem). The degree of freedom $\upsilon$ can be regarded as $\frac{(\gamma_1+\gamma_2)^2}{\gamma_1^2/(n_1-1)+\gamma_2^2/(n_2-1)}$, where $\gamma_i=\frac{\sigma_2^2}{n_i}$. For the significance level $\alpha$, because we do pairwise tests, let $\alpha=1-0.05/3$ as the significance level to control the family wise error. Compared two values, we can make a conclusion whether there is a casual effect.
+
+Test 1  
+Treatments: small class type, regular class type.  
+$t^*=\frac{\hat{\tau}}{\widehat{var}(\hat\tau)}=8.077159$, degree of freedom $\upsilon\approx3892$. And $t^*>t(1-0.05/3,3892)$. We reject the null hypothese and make a claim that there is a casual effect, that is, compared with regular class, small class contribute to higher math grade in 1st grade.
+
+Test 2  
+Treatments: small class type, regular-with-aide class type.  
+$t^*=\frac{\hat{\tau}}{\widehat{var}(\hat\tau)}=4.820985$, degree of freedom $\upsilon\approx 3928$. And $t^*>t(1-0.05/3,3928)$. We reject the null hypothese and make a claim that there is a casual effect, that is, compared with regular-with-aide class, small class contribute to higher math grade in 1st grade.  
+
+Test 3  
+Treatments: regular class type, regular-with-aide class type.  
+$t^*=\frac{\hat{\tau}}{\widehat{var}(\hat\tau)}=3.294502$, degree of freedom $\upsilon\approx 4628$. And $t^*>t(1-0.05/3,4628)$. We reject the null hypothese and make a claim that there is a casual effect, that is, compared with regular-with-aide class, small class contribute to higher math grade in 1st grade.  
+
+We can make a conclusion that there are causal effect among pairwise comparisons.
+
+
+```{r}
+
+library(tidyverse)
+data_remove_na %>%
+  group_by(star1) %>%
+  summarize(var_math1 = var(math1, na.rm = T))
+
+data_remove_na %>%
+  group_by(star1) %>%
+  summarize(count = n())
+
+
+data_remove_na %>%
+  group_by(star1) %>%
+  summarize(mean_math1 = mean(math1, na.rm = T))
+```
